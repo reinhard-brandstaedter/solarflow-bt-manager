@@ -1,0 +1,10 @@
+sudo gatttool -I
+[                 ][LE]> connect 94:C9:60:3E:C8:E7
+
+
+
+find BT devices
+$ bluetoothctl 
+Agent registered
+[CHG] Controller B8:27:EB:E9:C1:68 Pairable: yes 
+[bluetooth]# scan on

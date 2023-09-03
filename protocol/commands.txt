@@ -1,0 +1,28 @@
+### setup initial configuration
+
+Bluetooth Attribute Protocol
+    Opcode: Write Command (0x52)
+        0... .... = Authentication Signature: False
+        .1.. .... = Command: True
+        ..01 0010 = Method: Write Request (0x12)
+    Handle: 0x0011 (Unknown: Unknown)
+        [Service UUID: 0000a00200001000800000805f9b34fb]
+        [UUID: 0000c30400001000800000805f9b34fb]
+    Value: 7b22696f7455726c223a226d712e7a656e2d696f742e636f6d222c226d65737361676549…
+
+{"iotUrl":"mq.zen-iot.com","messageId":"1002","method":"token","password":"xxxxx","ssid":"xxx","timeZone":"GMT+08:00","token":"7Y97Vj08nE9AEPX6"}
+
+
+### Control Settings
+
+Bluetooth Attribute Protocol
+    Opcode: Write Command (0x52)
+        0... .... = Authentication Signature: False
+        .1.. .... = Command: True
+        ..01 0010 = Method: Write Request (0x12)
+    Handle: 0x0011 (Unknown: Unknown)
+        [Service UUID: 0000a00200001000800000805f9b34fb]
+        [UUID: 0000c30400001000800000805f9b34fb]
+    Value: 7b226d6574686f64223a227772697465222c202274696d657374616d70223a2031363931…
+
+{"method":"write", "timestamp": 1691699019224, "messageId": "d90ad97f84254a09b052b4ead5b335ae","deviceId": "5ak8yGU7","properties":{"outputLimit":700}}

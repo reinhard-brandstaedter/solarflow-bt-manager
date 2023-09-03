@@ -72,7 +72,7 @@ def handle_rx(BleakGATTCharacteristic, data: bytearray):
     payload = json.loads(data.decode("utf8"))
     log.info(payload)
 
-    if "deviceId" in payload:
+    if "method" in payload and payload["method"] == "BLESPP":
         log.info(f'The SF device id is: {payload["deviceId"]}')
 
     if "properties" in payload:

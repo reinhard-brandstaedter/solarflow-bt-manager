@@ -79,7 +79,7 @@ def handle_rx(BleakGATTCharacteristic, data: bytearray):
         props = payload["properties"]
 
         for prop, val in props.items():
-            local_client.publish(f'solarflow-hub/telemetry{prop}',val)
+            local_client.publish(f'solarflow-hub/telemetry/{prop}',val)
 
         # also report whole state to mqtt (nothing coming from cloud now :-)
         local_client.publish("SKC4SpSn/5ak8yGU7/state",json.dumps(payload["properties"]))

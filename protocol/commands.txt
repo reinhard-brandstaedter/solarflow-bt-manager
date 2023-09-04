@@ -26,3 +26,8 @@ Bluetooth Attribute Protocol
     Value: 7b226d6574686f64223a227772697465222c202274696d657374616d70223a2031363931…
 
 {"method":"write", "timestamp": 1691699019224, "messageId": "d90ad97f84254a09b052b4ead5b335ae","deviceId": "5ak8yGU7","properties":{"outputLimit":700}}
+
+
+
+
+2023-09-04 15:48:24,353:INFO: {'messageId': '123', 'method': 'getInfo-rsp', 'deviceId': '5ak8yGU7', 'timestamp': 1693838884, 'deviceSn': 'PO1HLC9LDR01938', 'firmwares': [{'type': 'MASTER', 'version': 8220}, {'type': 'BMS', 'version': 8200}]}

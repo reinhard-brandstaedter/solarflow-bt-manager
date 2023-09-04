@@ -83,6 +83,15 @@ def handle_rx(BleakGATTCharacteristic, data: bytearray):
 
         # also report whole state to mqtt (nothing coming from cloud now :-)
         local_client.publish("SKC4SpSn/5ak8yGU7/state",json.dumps(payload["properties"]))
+    
+    if "packData" in payload:
+        packdata = payload["packData"]
+        if len(packdata) > 0:
+            for pack in packdata:
+                sn = pack.pop('sn')
+                for prop, val in pack.items():
+                local_client.publish(f'solarflow-hub/telemetry/batteries/{sn}/prop',val)
+
 
 async def main():
 

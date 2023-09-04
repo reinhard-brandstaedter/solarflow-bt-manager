@@ -90,7 +90,7 @@ def handle_rx(BleakGATTCharacteristic, data: bytearray):
             for pack in packdata:
                 sn = pack.pop('sn')
                 for prop, val in pack.items():
-                local_client.publish(f'solarflow-hub/telemetry/batteries/{sn}/prop',val)
+                    local_client.publish(f'solarflow-hub/telemetry/batteries/{sn}/prop',val)
 
 
 async def main():

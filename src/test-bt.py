@@ -42,11 +42,19 @@ async def local_mqtt_connect():
 async def getInfo(client):
     global local_client
     char = "0000c304-0000-1000-8000-00805f9b34fb"
-    cmd = {"deviceId":"5ak8yGU7","messageId":"none","method":"getInfo","timestamp": str(int(time())) }
+    info_cmd = {"deviceId":"5ak8yGU7","messageId":"none","method":"getInfo","timestamp": str(int(time())) }
+    properties_cmd = {"method":"read", "timestamp": str(int(time())), "messageId": "none","deviceId": "5ak8yGU7","properties":["getAll"]}
 
     try:
         b = bytearray()
-        b.extend(map(ord, json.dumps(cmd)))
+        b.extend(map(ord, json.dumps(info_cmd)))
+        await client.write_gatt_char(char,b,response=False)
+    except Exception:
+        log.exception("Getting device Info failed")
+    
+    try:
+        b = bytearray()
+        b.extend(map(ord, json.dumps(properties_cmd)))
         await client.write_gatt_char(char,b,response=False)
     except Exception:
         log.exception("Getting device Info failed")

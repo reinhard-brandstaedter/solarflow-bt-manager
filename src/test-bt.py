@@ -45,7 +45,7 @@ def getInfo(client):
     cmd = {"deviceId":"5ak8yGU7","messageId":"none","method":"getInfo","timestamp":str(int(time()))}
     try:
         b = bytearray()
-        b.extend(map(ord, cmd))
+        b.extend(map(ord, json.dumps(cmd))
         client.write_gatt_char(char,b,response=False)
     except Exception:
         log.exception("Getting device Info failed")

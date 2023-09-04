@@ -39,7 +39,7 @@ async def local_mqtt_connect():
     local_client.connect(local_broker,local_port)
     local_client.on_connect = on_connect
 
-def getInfo(client):
+async def getInfo(client):
     global local_client
     char = "0000c304-0000-1000-8000-00805f9b34fb"
     cmd = {"deviceId":"5ak8yGU7","messageId":"none","method":"getInfo","timestamp": str(int(time())) }
@@ -47,7 +47,7 @@ def getInfo(client):
     try:
         b = bytearray()
         b.extend(map(ord, json.dumps(cmd)))
-        client.write_gatt_char(char,b,response=False)
+        await client.write_gatt_char(char,b,response=False)
     except Exception:
         log.exception("Getting device Info failed")
 
@@ -123,7 +123,7 @@ async def main():
 
         #await set_IoT_Url(client)
 
-        getInfo(client)
+        await getInfo(client)
 
         while True:
             char = "0000c305-0000-1000-8000-00805f9b34fb"

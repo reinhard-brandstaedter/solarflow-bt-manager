@@ -138,13 +138,14 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
             await bt_client.stop_notify(SF_NOTIFY_CHAR)
             return
         else:
+            getinfo = True
             while True:
-                # fetch global info every minute
-                i = await asyncio.sleep(60, True)
-                if i:
-                    await getInfo(bt_client)
-                    i = False
                 await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)
+                # fetch global info every minute
+                if getinfo:
+                    await getInfo(bt_client)
+                    getinfo = False
+                getinfo = await asyncio.sleep(60, True)
 
 def main(argv):
     global mqtt_user, mqtt_pwd

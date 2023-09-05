@@ -120,7 +120,6 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
     log.info("Found device: " + str(device))
 
     async with BleakClient(device) as bt_client:
-        _connected.append(bt_client)
         svcs = bt_client.services
         log.info("Services:")
         for service in svcs:

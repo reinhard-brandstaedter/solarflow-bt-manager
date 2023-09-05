@@ -141,7 +141,7 @@ def main(argv):
     global mqtt_user, mqtt_pwd
     ssid = None
     mqtt_broker= mqtt_port = None
-    connect = disconnect = False
+    connect = disconnect = info_only = False
     opts, args = getopt.getopt(argv,"hidb:u:p:w:c")
     for opt, arg in opts:
         if opt == '-h':

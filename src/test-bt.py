@@ -141,6 +141,9 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
             return
         else:
             while True:
+                # fetch global info every minute
+                if int(time.strftime("%M")) == 0:
+                    await getInfo(bt_client)
                 await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)
 
 def main(argv):

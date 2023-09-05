@@ -187,10 +187,10 @@ def main(argv):
     asyncio.run(run(broker=mqtt_broker, port=mqtt_port, info_only=info_only, connect=connect, disconnect=disconnect))
 
 @atexit.register
-def cleanup():
+async def cleanup():
     global bt_client
     log.info("Disconnection Bluetooth Client")
-    bt_client.disconnect()
+    await bt_client.disconnect()
 
 if __name__ == '__main__':
     main(sys.argv[1:])

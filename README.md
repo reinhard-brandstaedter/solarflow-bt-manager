@@ -71,7 +71,7 @@ $ python3 solarflow-bt-manager.py -d -w <WiFi SSID> -b <local MQTT broker>
 This will - if successful - tell the hub to disconnect and reconnect the WiFi and then start sendin data to your local MQTT broker. Unfortunately it will use the hubs default (hardcoded?) password. So you will (for now hopefully) set your MQTT broker to accept any login (remove authentication).
 After some time you should see topics populated in your broker. You should see a topic similar like this ```/73bkTV/<your device id>/#```
 
-#### Reconnection the hub to the cloud
+#### Reconnecting the hub to the cloud
 Yoy can reconnect to hub back to Zendure's cloud again. This might be necessary to get firmware updates. The process is similar to the disconnect steps:
 
 ```

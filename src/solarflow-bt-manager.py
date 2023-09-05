@@ -56,9 +56,9 @@ async def getInfo(client):
     except Exception:
         log.exception("Getting device Info failed")
 
-def set_IoT_Url(client):
+def set_IoT_Url(client,broker,port,ssid):
     global mq_client
-    cmd1 = '{"iotUrl":"{}","messageId":"1002","method":"token","password":"{}","ssid":"{}","timeZone":"GMT+08:00","token":"abcdefgh"}'.format(MQTT_HOST,MQTT_PORT,WIFI_PWD,WIFI_SSID)
+    cmd1 = '{"iotUrl":"{}","messageId":"1002","method":"token","password":"{}","ssid":"{}","timeZone":"GMT+02:00","token":"abcdefgh"}'.format(broker,port,WIFI_PWD,ssid)
     cmd2 = '{"messageId":"1003","method":"station"}'
 
     reply = '{"messageId":123,"timestamp":'+str(int(time.time()))+',"params":{"token":"abcdefgh","result":0}}'
@@ -110,7 +110,7 @@ def handle_rx(BleakGATTCharacteristic, data: bytearray):
                         mq_client.publish(f'solarflow-hub/telemetry/batteries/{sn}/{prop}',val)
 
 
-async def run(broker=None, port=None, info_only: bool = False, connect: bool = False, disconnect: bool = False):
+async def run(broker=None, port=None, info_only: bool = False, connect: bool = False, disconnect: bool = False, ssid=None):
     global mq_client
     global bt_client
     device = await BleakScanner.find_device_by_filter(
@@ -128,8 +128,12 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
         if broker and port:
             mq_client = local_mqtt_connect(broker,port)
 
-        if disconnect and broker and port:
-            await set_IoT_Url(bt_client,broker,port)
+        if disconnect and broker and port and ssid:
+            await set_IoT_Url(bt_client,broker,port,ssid)
+        
+        if connect and ssid:
+            await set_IoT_Url(bt_client,"mq.zen-iot.com",1883,ssid)
+        
 
         if info_only and broker is None:
             await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)
@@ -195,7 +199,7 @@ def main(argv):
     if connect:
         print("Connecting Solarflow Hub Back to Zendure Cloud")
 
-    asyncio.run(run(broker=mqtt_broker, port=mqtt_port, info_only=info_only, connect=connect, disconnect=disconnect))
+    asyncio.run(run(broker=mqtt_broker, port=mqtt_port, info_only=info_only, connect=connect, disconnect=disconnect, ssid=ssid))
 
 if __name__ == '__main__':
     main(sys.argv[1:])

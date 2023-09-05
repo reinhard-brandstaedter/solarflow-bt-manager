@@ -23,7 +23,7 @@ SF_NOTIFY_CHAR = "0000c305-0000-1000-8000-00805f9b34fb"
 address = os.environ.get('SF_BT_ADDR',"94:C9:60:3E:C8:E7")
 WIFI_PWD = os.environ.get('WIFI_PWD',None)
 WIFI_SSID = os.environ.get('WIFI_SSID',None)
-mq_client: mqtt_client
+mq_client: mqtt_client = None
 
 
 def on_connect(client, userdata, flags, rc):
@@ -82,28 +82,30 @@ def set_IoT_Url(client):
 
 
 def handle_rx(BleakGATTCharacteristic, data: bytearray):
+    global mq_client
     payload = json.loads(data.decode("utf8"))
     log.info(payload)
 
     if "method" in payload and payload["method"] == "BLESPP":
         log.info(f'The SF device id is: {payload["deviceId"]}')
 
-    if "properties" in payload:
-        props = payload["properties"]
+    if mq_client:
+        if "properties" in payload:
+            props = payload["properties"]
 
-        for prop, val in props.items():
-            mq_client.publish(f'solarflow-hub/telemetry/{prop}',val)
+            for prop, val in props.items():
+                mq_client.publish(f'solarflow-hub/telemetry/{prop}',val)
 
-        # also report whole state to mqtt (nothing coming from cloud now :-)
-        mq_client.publish("SKC4SpSn/5ak8yGU7/state",json.dumps(payload["properties"]))
-    
-    if "packData" in payload:
-        packdata = payload["packData"]
-        if len(packdata) > 0:
-            for pack in packdata:
-                sn = pack.pop('sn')
-                for prop, val in pack.items():
-                    mq_client.publish(f'solarflow-hub/telemetry/batteries/{sn}/{prop}',val)
+            # also report whole state to mqtt (nothing coming from cloud now :-)
+            mq_client.publish("SKC4SpSn/5ak8yGU7/state",json.dumps(payload["properties"]))
+        
+        if "packData" in payload:
+            packdata = payload["packData"]
+            if len(packdata) > 0:
+                for pack in packdata:
+                    sn = pack.pop('sn')
+                    for prop, val in pack.items():
+                        mq_client.publish(f'solarflow-hub/telemetry/batteries/{sn}/{prop}',val)
 
 
 async def run(broker=None, port=None, info_only: bool = False, connect: bool = False, disconnect: bool = False):

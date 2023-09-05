@@ -25,6 +25,7 @@ WIFI_PWD = os.environ.get('WIFI_PWD',None)
 WIFI_SSID = os.environ.get('WIFI_SSID',None)
 mq_client: mqtt_client = None
 bt_client: BleakClient
+_connected = []
 
 
 def on_connect(client, userdata, flags, rc):
@@ -119,6 +120,7 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
     log.info("Found device: " + str(device))
 
     async with BleakClient(device) as bt_client:
+        _connected.append(bt_client)
         svcs = bt_client.services
         log.info("Services:")
         for service in svcs:
@@ -186,11 +188,14 @@ def main(argv):
 
     asyncio.run(run(broker=mqtt_broker, port=mqtt_port, info_only=info_only, connect=connect, disconnect=disconnect))
 
+async def _destroy(self):
+    log.info("Cleanup BT Connections")
+    await asyncio.wait([client.disconnect() for client in _connected], return_when=asyncio.ALL_COMPLETED)
+    _connected = []
+
 @atexit.register
-async def cleanup():
-    global bt_client
-    log.info("Disconnection Bluetooth Client")
-    await bt_client.disconnect()
+def _destroy():
+    asyncio.get_event_loop().run_until_complete(_destroy())
 
 if __name__ == '__main__':
     main(sys.argv[1:])

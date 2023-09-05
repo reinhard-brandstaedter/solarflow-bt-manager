@@ -7,7 +7,6 @@ import sys
 import getopt
 import os
 import time 
-import atexit
 
 FORMAT = '%(asctime)s:%(levelname)s: %(message)s'
 logging.basicConfig(stream=sys.stdout, level="INFO", format=FORMAT)
@@ -188,23 +187,7 @@ def main(argv):
     if connect:
         print("Connecting Solarflow Hub Back to Zendure Cloud")
 
-    '''
-    loop = asyncio.get_event_loop()
-    try:
-        loop.run_until_complete()
-    finally:
-        loop.close()
-    '''
     asyncio.run(run(broker=mqtt_broker, port=mqtt_port, info_only=info_only, connect=connect, disconnect=disconnect))
-
-async def _destroy(self):
-    log.info("Cleanup BT Connections")
-    await asyncio.wait([client.disconnect() for client in _connected], return_when=asyncio.FIRST_COMPLETED)
-    _connected = []
-
-@atexit.register
-def _destroy():
-    asyncio.wait(_destroy())
 
 if __name__ == '__main__':
     main(sys.argv[1:])

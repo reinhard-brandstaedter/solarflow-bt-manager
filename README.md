@@ -47,7 +47,8 @@ $ python3 solarflow-bt-manager.py -i -b 192.168.1.245
 ```
 
 Once the Bluetooth connection is established telemetry data will be published to the root topic ```solarflow-hub/telemetry```.
-You can use that data for any other integration (e.g. Homeautomation systems etc.)
+You can use that data for any other integration (e.g. Homeautomation systems etc.).
+E.g. my [Solarflow Statuspage](https://github.com/reinhard-brandstaedter/solarflow-statuspage) is now also using this data instead of the cloud data.
 
 > [!NOTE]
 > While the bluetooth connection is enabled, the hub ONLY reports telemetry via BT! There will be no data sent in parallel to the Zendure Cloud broker. As a consequence you will not see any data in the mobile app. You can still control the hub though via the app. 

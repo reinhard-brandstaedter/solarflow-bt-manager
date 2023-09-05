@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import asyncio
 from bleak import BleakClient, BleakScanner
 from paho.mqtt import client as mqtt_client

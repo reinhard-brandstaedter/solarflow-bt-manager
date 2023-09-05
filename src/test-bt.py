@@ -186,7 +186,11 @@ def main(argv):
     if connect:
         print("Connecting Solarflow Hub Back to Zendure Cloud")
 
-    asyncio.run(run(broker=mqtt_broker, port=mqtt_port, info_only=info_only, connect=connect, disconnect=disconnect))
+    loop = asyncio.get_event_loop()
+    try:
+        loop.run_until_complete(run(broker=mqtt_broker, port=mqtt_port, info_only=info_only, connect=connect, disconnect=disconnect))
+    finally:
+        loop.close()
 
 async def _destroy(self):
     log.info("Cleanup BT Connections")

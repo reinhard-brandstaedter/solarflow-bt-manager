@@ -133,8 +133,12 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
         if disconnect and broker and port:
             await set_IoT_Url(bt_client,broker,port)
 
-        if info_only:
+        if info_only and broker is None:
+            await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)
             await getInfo(bt_client)
+            await asyncio.sleep(20)
+            await bt_client.stop_notify(SF_NOTIFY_CHAR)
+            return
 
         while True:
             await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)

@@ -133,9 +133,8 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
 
 def main(argv):
     global mqtt_user, mqtt_pwd
-
     ssid = None
-    mqtt_broker = None
+    mqtt_broker= mqtt_port = None
     opts, args = getopt.getopt(argv,"hidb:u:p:w:c")
     for opt, arg in opts:
         if opt == '-h':

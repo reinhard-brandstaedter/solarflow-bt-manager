@@ -88,8 +88,10 @@ def handle_rx(BleakGATTCharacteristic, data: bytearray):
     payload = json.loads(data.decode("utf8"))
     log.info(payload)
 
-    if "method" in payload and payload["method"] == "BLESPP":
-        log.info(f'The SF device id is: {payload["deviceId"]}')
+    if "method" in payload and payload["method"] == "getInfo-rsp":
+        log.info(f'The SF device ID is: {payload["deviceId"]}')
+        log.info(f'The SF device SN is: {payload["deviceSn"]}')
+        
 
     if mq_client:
         if "properties" in payload:
@@ -197,7 +199,7 @@ def main(argv):
 
 async def _destroy(self):
     log.info("Cleanup BT Connections")
-    await asyncio.wait([client.disconnect() for client in _connected], return_when=asyncio.ALL_COMPLETED)
+    await asyncio.wait([client.disconnect() for client in _connected], return_when=asyncio.FIRST_COMPLETED)
     _connected = []
 
 @atexit.register

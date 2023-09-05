@@ -17,7 +17,8 @@ log = logging.getLogger("")
 Very basic attempt to just report Solarflow Hub's stats to mqtt for local long-term tests
 '''
 
-SF_GATT_CHAR = "0000c304-0000-1000-8000-00805f9b34fb"
+SF_COMMAND_CHAR = "0000c304-0000-1000-8000-00805f9b34fb"
+SF_NOTIFY_CHAR = "0000c305-0000-1000-8000-00805f9b34fb"
 
 address = os.environ.get('SF_BT_ADDR',"94:C9:60:3E:C8:E7")
 WIFI_PWD = os.environ.get('WIFI_PWD',None)
@@ -44,14 +45,14 @@ async def getInfo(client):
     try:
         b = bytearray()
         b.extend(map(ord, json.dumps(info_cmd)))
-        await client.write_gatt_char(SF_GATT_CHAR,b,response=False)
+        await client.write_gatt_char(SF_COMMAND_CHAR,b,response=False)
     except Exception:
         log.exception("Getting device Info failed")
     
     try:
         b = bytearray()
         b.extend(map(ord, json.dumps(properties_cmd)))
-        await client.write_gatt_char(SF_GATT_CHAR,b,response=False)
+        await client.write_gatt_char(SF_COMMAND_CHAR,b,response=False)
     except Exception:
         log.exception("Getting device Info failed")
 
@@ -65,14 +66,14 @@ def set_IoT_Url(client):
     try:
         b = bytearray()
         b.extend(map(ord, cmd1))
-        client.write_gatt_char(SF_GATT_CHAR,b,response=False)
+        client.write_gatt_char(SF_COMMAND_CHAR,b,response=False)
     except Exception:
         log.exception("Setting reporting URL failed")
 
     try:
         b = bytearray()
         b.extend(map(ord, cmd2))
-        client.write_gatt_char(SF_GATT_CHAR,b,response=False)
+        client.write_gatt_char(SF_COMMAND_CHAR,b,response=False)
     except Exception:
         log.exception("Setting WiFi Mode failed")
 
@@ -128,7 +129,7 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
 
         while True:
             await getInfo(client)
-            await client.start_notify(SF_GATT_CHAR,handle_rx)
+            await client.start_notify(SF_NOTIFY_CHAR,handle_rx)
             time.sleep(5)
             if info_only:
                 client.disconnect()

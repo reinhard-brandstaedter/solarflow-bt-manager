@@ -139,9 +139,9 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
             await asyncio.sleep(20)
             await bt_client.stop_notify(SF_NOTIFY_CHAR)
             return
-
-        while True:
-            await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)
+        else:
+            while True:
+                await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)
 
 def main(argv):
     global mqtt_user, mqtt_pwd

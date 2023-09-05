@@ -79,4 +79,7 @@ $ export WIFI_PWD="your_wifi_password"
 $ export SF_DEVICE_ID="your_sf_deviceid"
 $ python3 solarflow-bt-manager.py -c -w <WiFi SSID>
 ```
+## Donations
+If you are happy with the solarflow tools I created and it helps you, I'm happy to take donations so that in the case of destroying my only Solarflow system while hacking on the internals I can afford a new one :-)
 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RUZP3LCKH56CU)

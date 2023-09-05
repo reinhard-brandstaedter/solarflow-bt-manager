@@ -21,13 +21,10 @@ Very basic attempt to just report Solarflow Hub's stats to mqtt for local long-t
 SF_COMMAND_CHAR = "0000c304-0000-1000-8000-00805f9b34fb"
 SF_NOTIFY_CHAR = "0000c305-0000-1000-8000-00805f9b34fb"
 
-address = os.environ.get('SF_BT_ADDR',"94:C9:60:3E:C8:E7")
 WIFI_PWD = os.environ.get('WIFI_PWD',None)
 WIFI_SSID = os.environ.get('WIFI_SSID',None)
 mq_client: mqtt_client = None
 bt_client: BleakClient
-_connected = []
-
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
@@ -42,8 +39,8 @@ def local_mqtt_connect(broker, port):
     return client
 
 async def getInfo(client):
-    info_cmd = {"deviceId":"5ak8yGU7","messageId":"none","method":"getInfo","timestamp": str(int(time.time())) }
-    properties_cmd = {"method":"read", "timestamp": str(int(time.time())), "messageId": "none","deviceId": "5ak8yGU7","properties":["getAll"]}
+    info_cmd = {"messageId":"none","method":"getInfo","timestamp": str(int(time.time())) }
+    properties_cmd = {"method":"read", "timestamp": str(int(time.time())), "messageId": "none","properties":["getAll"]}
 
     try:
         b = bytearray()

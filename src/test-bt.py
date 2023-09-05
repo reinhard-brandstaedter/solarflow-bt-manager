@@ -24,6 +24,7 @@ address = os.environ.get('SF_BT_ADDR',"94:C9:60:3E:C8:E7")
 WIFI_PWD = os.environ.get('WIFI_PWD',None)
 WIFI_SSID = os.environ.get('WIFI_SSID',None)
 mq_client: mqtt_client = None
+bt_client: BleakClient
 
 
 def on_connect(client, userdata, flags, rc):
@@ -110,14 +111,15 @@ def handle_rx(BleakGATTCharacteristic, data: bytearray):
 
 async def run(broker=None, port=None, info_only: bool = False, connect: bool = False, disconnect: bool = False):
     global mq_client
+    global bt_client
     device = await BleakScanner.find_device_by_filter(
                 lambda d, ad: d.name and d.name.lower().startswith("zen")
             )
 
     log.info("Found device: " + str(device))
 
-    async with BleakClient(device) as client:
-        svcs = client.services
+    async with BleakClient(device) as bt_client:
+        svcs = bt_client.services
         log.info("Services:")
         for service in svcs:
             log.info(service)
@@ -126,16 +128,13 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
             mq_client = local_mqtt_connect(broker,port)
 
         if disconnect and broker and port:
-            await set_IoT_Url(client,broker,port)
-            client.disconnect()
+            await set_IoT_Url(bt_client,broker,port)
+
+        if info_only:
+            await getInfo(bt_client)
 
         while True:
-            await getInfo(client)
-            await client.start_notify(SF_NOTIFY_CHAR,handle_rx)
-            time.sleep(5)
-            if info_only:
-                client.disconnect()
-                break
+            await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)
 
 def main(argv):
     global mqtt_user, mqtt_pwd
@@ -186,6 +185,12 @@ def main(argv):
         print("Connecting Solarflow Hub Back to Zendure Cloud")
 
     asyncio.run(run(broker=mqtt_broker, port=mqtt_port, info_only=info_only, connect=connect, disconnect=disconnect))
+
+@atexit.register
+def cleanup():
+    global bt_client
+    log.info("Disconnection Bluetooth Client")
+    bt_client.disconnect()
 
 if __name__ == '__main__':
     main(sys.argv[1:])

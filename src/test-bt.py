@@ -7,6 +7,7 @@ import sys
 import getopt
 import os
 import time 
+import atexit
 
 FORMAT = '%(asctime)s:%(levelname)s: %(message)s'
 logging.basicConfig(stream=sys.stdout, level="INFO", format=FORMAT)
@@ -123,12 +124,14 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
 
         if disconnect and broker and port:
             await set_IoT_Url(client,broker,port)
+            client.disconnect()
 
         while True:
             await getInfo(client)
             await client.start_notify(SF_GATT_CHAR,handle_rx)
             time.sleep(5)
             if info_only:
+                client.disconnect()
                 break
 
 def main(argv):

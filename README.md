@@ -49,7 +49,7 @@ All setting changes will be needed to be performed locally via the correct MQTT 
 
 Once you take your hub offline nothing needs to run locally except your own MQTT broker.
 
-![sf-hub-offline](img/sf-hub-offline.jpeg | width=250)
+<img src="img/sf-hub-offline.jpeg" width="250px" />
 
 #### Proxy Mode
 The proxy mode means your SF Hub will still report some device data to Zendure's cloud but no live telemetry data. You would still see your hub in the mobile app and you will be able to control it via the mobile app and schedules should also work.
@@ -112,7 +112,7 @@ $ python3 solarflow-bt-manager.py -d -w <WiFi SSID> -b <local MQTT broker>
 This will - if successful - tell the hub to disconnect and reconnect the WiFi and then start sendin data to your local MQTT broker. Unfortunately it will use the hubs default (hardcoded?) password. So you will (for now hopefully) set your MQTT broker to accept any login (remove authentication).
 After some time you should see topics populated in your broker. You should see a topic similar like this ```/73bkTV/<your device id>/#```
 
-![sf-hub-mqtt](img/sf-hub-mqtt.png | width=250)
+<img src="img/sf-hub-mqtt.png" width="350px" />
 
 ### Reconnecting the hub to the cloud
 Yoy can reconnect to hub back to Zendure's cloud again. This might be necessary to get firmware updates. The process is similar to the disconnect steps:

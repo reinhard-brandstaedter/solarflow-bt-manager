@@ -114,6 +114,10 @@ After some time you should see topics populated in your broker. You should see a
 
 <img src="img/sf-hub-mqtt.png" width="350px" />
 
+#### Prettyfying Zendure's MQTT topics
+The hub will report data like in the screenshot above. To align this with the structure the proxy-mode and the statuspage uses I've also added a little prettyfier tool that (run as a service) will process the original MQTT topics and publish them in an easier readable format.
+You can find that tool '''solarflow-topic-manager.py''' [here](src/solarflow-topic-mapper.py). Run it as a service or docker container.
+
 ### Reconnecting the hub to the cloud
 Yoy can reconnect to hub back to Zendure's cloud again. This might be necessary to get firmware updates. The process is similar to the disconnect steps:
 

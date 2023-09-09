@@ -24,6 +24,8 @@ SF_NOTIFY_CHAR = "0000c305-0000-1000-8000-00805f9b34fb"
 WIFI_PWD = os.environ.get('WIFI_PWD',None)
 WIFI_SSID = os.environ.get('WIFI_SSID',None)
 SF_DEVICE_ID = os.environ.get('SF_DEVICE_ID',None)
+mqtt_user = os.environ.get('MQTT_USER',None)
+mqtt_pwd = os.environ.get('MQTT_PWD',None)
 mq_client: mqtt_client = None
 bt_client: BleakClient
 
@@ -35,6 +37,8 @@ def on_connect(client, userdata, flags, rc):
 
 def local_mqtt_connect(broker, port):
     client = mqtt_client.Client(client_id="solarflow-bt")
+    if mqtt_user is not None and mqtt_pwd is not None:
+        client.username_pw_set(mqtt_user, mqtt_pwd)
     client.connect(broker,port)
     client.on_connect = on_connect
     return client
@@ -165,7 +169,7 @@ def main(argv):
             print(' -d\tdisconnect the hub from Zendure cloud')
             print(' -b\thostname:port of local MQTT broker')
             print(' -w\tWiFi SSID the hub should be connected to')
-            print(' -d\tconnect the hub to Zendure cloud')
+            print(' -c\tconnect the hub to Zendure cloud')
             sys.exit()
         elif opt in ("-i", "--info"):
             info_only = True

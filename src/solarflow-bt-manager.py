@@ -63,7 +63,7 @@ async def getInfo(client):
 
 def set_IoT_Url(client,broker,port,ssid,deviceid):
     global mq_client
-    cmd1 = '{"iotUrl":"{}:{}","messageId":"1002","method":"token","password":"{}","ssid":"{}","timeZone":"GMT+02:00","token":"abcdefgh"}'.format(broker,port,WIFI_PWD,ssid)
+    cmd1 = f'{{"iotUrl":"{broker}:{port}","messageId":"1002","method":"token","password":"{WIFI_PWD}","ssid":"{ssid}","timeZone":"GMT+02:00","token":"abcdefgh"}}'
     cmd2 = '{"messageId":"1003","method":"station"}'
 
     reply = '{"messageId":123,"timestamp":'+str(int(time.time()))+',"params":{"token":"abcdefgh","result":0}}'

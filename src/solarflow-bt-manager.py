@@ -89,7 +89,8 @@ async def set_IoT_Url(client,broker,port,ssid,deviceid):
     except Exception:
         log.exception("Setting WiFi Mode failed")
 
-    mq_client.publish(f'iot/73bkTV/{deviceid}/register/replay',reply)
+    if mq_client:
+        mq_client.publish(f'iot/73bkTV/{deviceid}/register/replay',reply)
 
 
 def handle_rx(BleakGATTCharacteristic, data: bytearray):

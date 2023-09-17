@@ -63,7 +63,7 @@ async def getInfo(client):
 
 async def set_IoT_Url(client,broker,port,ssid,deviceid):
     global mq_client
-    c1 = {'iotUrl':f'{broker}:{port}',
+    c1 = {'iotUrl':broker,
           'messageId':'1002',
           'method': 'token',
           'password': WIFI_PWD,

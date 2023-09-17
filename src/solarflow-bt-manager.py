@@ -137,7 +137,7 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
             return
         
         if connect and ssid:
-            await set_IoT_Url(bt_client,"mq.zen-iot.com",1883,ssid)
+            await set_IoT_Url(bt_client,"mq.zen-iot.com",1883,ssid,SF_DEVICE_ID)
             return
 
         if info_only and broker is None:

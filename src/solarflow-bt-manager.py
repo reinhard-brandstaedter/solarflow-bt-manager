@@ -63,7 +63,7 @@ async def getInfo(client):
 
 async def set_IoT_Url(client,broker,port,ssid,deviceid):
     global mq_client
-    c1 = {'iotUrl':broker,
+    c1 = {'iotUrl':f'{broker}:{port}',
           'messageId':'1002',
           'method': 'token',
           'password': WIFI_PWD,
@@ -192,7 +192,7 @@ def main(argv):
         elif opt in ("-b", "--mqtt_broker"):
             parts = arg.split(':')
             mqtt_broker = parts[0]
-            mqtt_port = parts[1] if len(parts) > 1 else 1883
+            mqtt_port = int(parts[1]) if len(parts) > 1 else 1883
         elif opt in ("-u", "--mqtt_user"):
             mqtt_user = arg
         elif opt in ("-p", "--mqtt_pwd"):

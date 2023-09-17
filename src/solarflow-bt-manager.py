@@ -61,7 +61,7 @@ async def getInfo(client):
     except Exception:
         log.exception("Getting device Info failed")
 
-def set_IoT_Url(client,broker,port,ssid,deviceid):
+async def set_IoT_Url(client,broker,port,ssid,deviceid):
     global mq_client
     c1 = {'iotUrl':broker,
           'messageId':'1002',
@@ -78,14 +78,14 @@ def set_IoT_Url(client,broker,port,ssid,deviceid):
     try:
         b = bytearray()
         b.extend(map(ord, cmd1))
-        client.write_gatt_char(SF_COMMAND_CHAR,b,response=False)
+        await client.write_gatt_char(SF_COMMAND_CHAR,b,response=False)
     except Exception:
         log.exception("Setting reporting URL failed")
 
     try:
         b = bytearray()
         b.extend(map(ord, cmd2))
-        client.write_gatt_char(SF_COMMAND_CHAR,b,response=False)
+        await client.write_gatt_char(SF_COMMAND_CHAR,b,response=False)
     except Exception:
         log.exception("Setting WiFi Mode failed")
 

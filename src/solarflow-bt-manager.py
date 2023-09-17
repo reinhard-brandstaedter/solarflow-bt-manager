@@ -142,13 +142,13 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
             mq_client = local_mqtt_connect(broker,port)
 
         if disconnect and broker and port and ssid and SF_DEVICE_ID:
-            set_IoT_Url(bt_client,broker,port,ssid,SF_DEVICE_ID)
+            await set_IoT_Url(bt_client,broker,port,ssid,SF_DEVICE_ID)
             log.info("Setting IoTURL connection parameters - disconneect")
             await asyncio.sleep(30)
             return
         
         if connect and ssid:
-            set_IoT_Url(bt_client,"mq.zen-iot.com",1883,ssid,SF_DEVICE_ID)
+            await set_IoT_Url(bt_client,"mq.zen-iot.com",1883,ssid,SF_DEVICE_ID)
             log.info("Setting IoTURL connection parameters - connect")
             await asyncio.sleep(30)
             return

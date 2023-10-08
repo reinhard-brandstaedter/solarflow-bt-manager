@@ -23,7 +23,6 @@ def on_message(client, userdata, msg):
             props = payload["properties"]
             for prop, val in props.items():
                 client.publish(f'solarflow-hub/telemetry/{prop}',val)
-            client.publish(f'SKC4SpSn/{sf_device_id}/state',json.dumps(payload["properties"]))
         
         if "packData" in payload:
             packdata = payload["packData"]

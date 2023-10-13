@@ -1,6 +1,7 @@
 import random, json, time, logging, sys, getopt, os
 import string
 from paho.mqtt import client as mqtt_client
+from functools import reduce
 
 FORMAT = '%(asctime)s:%(levelname)s: %(message)s'
 logging.basicConfig(stream=sys.stdout, level="INFO", format=FORMAT)
@@ -15,6 +16,10 @@ mqtt_pwd = os.environ.get('MQTT_PWD',None)
 mqtt_host = os.environ.get('MQTT_HOST',None)
 mqtt_port = os.environ.get('MQTT_PORT',1883)
 report_topic = None
+smartmeter_topic = os.environ.get('SMARTMETER_TOPIC',"tele/E220/SENSOR")
+
+def deep_get(dictionary, keys, default=None):
+    return reduce(lambda d, key: d.get(key, default) if isinstance(d, dict) else default, keys.split("."), dictionary)
 
 def on_message(client, userdata, msg):
     if msg.topic == report_topic:
@@ -31,6 +36,22 @@ def on_message(client, userdata, msg):
                     sn = pack.pop('sn')
                     for prop, val in pack.items():
                         client.publish(f'solarflow-hub/telemetry/batteries/{sn}/{prop}',val)
+    
+    if msg.topic == smartmeter_topic:
+        payload = json.loads(msg.payload.decode())
+        
+        value = None
+        if type(payload) is float or type(payload) is int:
+            value = payload
+        else:
+            try: 
+                value = deep_get(payload,"MT175.P",None)
+                value = deep_get(payload,"Power.Power_curr",value)
+            except:
+                log.error(f'Could not get value from specified topic payload: {sys.exc_info()}')
+
+        if value:
+            client.publish(f'solarflow-hub/control/smartmeter',int(value))
 
 
 def on_connect(client, userdata, flags, rc):
@@ -50,6 +71,7 @@ def connect_mqtt() -> mqtt_client:
 
 def subscribe(client: mqtt_client):
     client.subscribe(report_topic)
+    client.subscribe(smartmeter_topic)
     client.on_message = on_message
     client.publish(f'iot/73bkTV/{sf_device_id}/properties/read','{"properties": ["getAll"]}')
 

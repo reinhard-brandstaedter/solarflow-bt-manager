@@ -17,17 +17,21 @@ mqtt_host = os.environ.get('MQTT_HOST',None)
 mqtt_port = os.environ.get('MQTT_PORT',1883)
 report_topic = None
 smartmeter_topic = os.environ.get('SMARTMETER_TOPIC',"tele/E220/SENSOR")
+devices = set()
 
 def deep_get(dictionary, keys, default=None):
     return reduce(lambda d, key: d.get(key, default) if isinstance(d, dict) else default, keys.split("."), dictionary)
 
 def on_message(client, userdata, msg):
-    if msg.topic == report_topic:
+    global devices
+    if sf_product_id in msg.topic:
+        device_id = msg.topic.split('/')[2]
+        devices.add(device_id)
         payload = json.loads(msg.payload.decode())
         if "properties" in payload:
             props = payload["properties"]
             for prop, val in props.items():
-                client.publish(f'solarflow-hub/telemetry/{prop}',val)
+                client.publish(f'solarflow-hub/{device_id}/telemetry/{prop}',val)
         
         if "packData" in payload:
             packdata = payload["packData"]
@@ -35,7 +39,7 @@ def on_message(client, userdata, msg):
                 for pack in packdata:
                     sn = pack.pop('sn')
                     for prop, val in pack.items():
-                        client.publish(f'solarflow-hub/telemetry/batteries/{sn}/{prop}',val)
+                        client.publish(f'solarflow-hub/{device_id}/telemetry/batteries/{sn}/{prop}',val)
     
     if msg.topic == smartmeter_topic:
         payload = json.loads(msg.payload.decode())
@@ -73,15 +77,17 @@ def subscribe(client: mqtt_client):
     client.subscribe(report_topic)
     client.subscribe(smartmeter_topic)
     client.on_message = on_message
-    client.publish(f'iot/73bkTV/{sf_device_id}/properties/read','{"properties": ["getAll"]}')
+    #client.publish(f'iot/73bkTV/{sf_device_id}/properties/read','{"properties": ["getAll"]}')
 
 def run():
+    global devices
     client = connect_mqtt()
     subscribe(client)
     client.loop_start()
 
     while True:
-        client.publish(f'iot/73bkTV/{sf_device_id}/properties/read','{"properties": ["getAll"]}')
+        for device in devices:
+            client.publish(f'iot/73bkTV/{device}/properties/read','{"properties": ["getAll"]}')
         time.sleep(60)
 
 
@@ -121,7 +127,7 @@ def main(argv):
         sys.exit()
     else:
         log.info(f'Solarflow Hub: {sf_product_id}/{sf_device_id}')
-        report_topic = f'/{sf_product_id}/{sf_device_id}/properties/report'
+        report_topic = f'/{sf_product_id}/+/properties/report'
         log.info(f'Reporting topic: {report_topic}')
 
     run()

@@ -1,4 +1,4 @@
-FROM python:3.10-alpine
+FROM rbrandstaedter/solarflow-control-baseimage:latest
 
 # Create stdconfig directory
 WORKDIR /

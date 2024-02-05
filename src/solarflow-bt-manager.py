@@ -130,44 +130,51 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
                 lambda d, ad: d.name and d.name.lower().startswith("zen")
             )
 
-    log.info("Found device: " + str(device))
+    if device:
+        log.info("Found device: " + str(device))
 
-    async with BleakClient(device) as bt_client:
-        svcs = bt_client.services
-        log.info("Services:")
-        for service in svcs:
-            log.info(service)
+        async with BleakClient(device) as bt_client:
+            svcs = bt_client.services
+            log.info("Services:")
+            for service in svcs:
+                log.info(service)
 
-        if broker and port:
-            mq_client = local_mqtt_connect(broker,port)
+            if broker and port:
+                mq_client = local_mqtt_connect(broker,port)
 
-        if disconnect and broker and port and ssid and SF_DEVICE_ID:
-            await set_IoT_Url(bt_client,broker,port,ssid,SF_DEVICE_ID)
-            log.info("Setting IoTURL connection parameters - disconneect")
-            await asyncio.sleep(30)
-            return
-        
-        if connect and ssid:
-            await set_IoT_Url(bt_client,"mq.zen-iot.com",1883,ssid,SF_DEVICE_ID)
-            log.info("Setting IoTURL connection parameters - connect")
-            await asyncio.sleep(30)
-            return
+            if disconnect and broker and port and ssid and SF_DEVICE_ID:
+                await set_IoT_Url(bt_client,broker,port,ssid,SF_DEVICE_ID)
+                log.info("Setting IoTURL connection parameters - disconneect")
+                await asyncio.sleep(30)
+                return
+            
+            if connect and ssid:
+                await set_IoT_Url(bt_client,"mq.zen-iot.com",1883,ssid,SF_DEVICE_ID)
+                log.info("Setting IoTURL connection parameters - connect")
+                await asyncio.sleep(30)
+                return
 
-        if info_only and broker is None:
-            await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)
-            await getInfo(bt_client)
-            await asyncio.sleep(20)
-            await bt_client.stop_notify(SF_NOTIFY_CHAR)
-            return
-        else:
-            getinfo = True
-            while True:
+            if info_only and broker is None:
                 await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)
-                # fetch global info every minute
-                if getinfo:
-                    await getInfo(bt_client)
-                    getinfo = False
-                getinfo = await asyncio.sleep(60, True)
+                await getInfo(bt_client)
+                await asyncio.sleep(20)
+                await bt_client.stop_notify(SF_NOTIFY_CHAR)
+                return
+            else:
+                getinfo = True
+                while True:
+                    await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)
+                    # fetch global info every minute
+                    if getinfo:
+                        await getInfo(bt_client)
+                        getinfo = False
+                    getinfo = await asyncio.sleep(60, True)
+    else:
+        log.info("No Solarflow device found! You can try these steps:\n \
+                  - Move closer to the hub\n \
+                  - Reset your bluetooth connection (bluetoothctl)\n \
+                  - Restart the Solarflow Hub\n \
+                  - Disconnect any mobile Apps currently connected to the hub")
 
 def main(argv):
     global mqtt_user, mqtt_pwd

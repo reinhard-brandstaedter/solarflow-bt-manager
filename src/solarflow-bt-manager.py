@@ -63,7 +63,7 @@ async def getInfo(client):
         log.exception("Getting device Info failed")
 
 async def set_IoT_Url(client,broker,port,ssid,deviceid):
-    global mq_client
+    global mq_client, SF_PRODUCT_ID
     c1 = {'iotUrl':broker,
           'messageId':'1002',
           'method': 'token',

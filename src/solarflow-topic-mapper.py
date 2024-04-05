@@ -24,6 +24,8 @@ def deep_get(dictionary, keys, default=None):
 
 def on_message(client, userdata, msg):
     global devices
+    global sf_product_id
+
     if sf_product_id in msg.topic:
         device_id = msg.topic.split('/')[2]
         devices.add(device_id)
@@ -81,6 +83,7 @@ def subscribe(client: mqtt_client):
 
 def run():
     global devices
+    global sf_product_id
     client = connect_mqtt()
     subscribe(client)
     client.loop_start()
@@ -95,6 +98,7 @@ def main(argv):
     global mqtt_host, mqtt_port, mqtt_user, mqtt_pwd
     global smartmeter_topic
     global sf_device_id
+    global sf_product_id
     global report_topic
     opts, args = getopt.getopt(argv,"hb:p:u:s:d:s:",["broker=","port=","user=","password=","device=","smartmeter="])
     for opt, arg in opts:

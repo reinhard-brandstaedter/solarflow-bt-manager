@@ -37,7 +37,7 @@ def on_connect(client, userdata, flags, rc):
         log.error("Failed to connect, return code %d\n", rc)
 
 def local_mqtt_connect(broker, port):
-    client = mqtt_client.Client(client_id="solarflow-bt")
+    client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1, client_id="solarflow-bt")
     if mqtt_user is not None and mqtt_pwd is not None:
         client.username_pw_set(mqtt_user, mqtt_pwd)
     client.connect(broker,port)
@@ -92,7 +92,7 @@ async def set_IoT_Url(client,broker,port,ssid,deviceid):
         log.exception("Setting WiFi Mode failed")
 
     if mq_client:
-        mq_client.publish(f'iot/'+SF_PRODUCT_ID+'/{deviceid}/register/replay',reply)
+        mq_client.publish(f'iot/{SF_PRODUCT_ID}/{deviceid}/register/replay',reply)
 
 
 def handle_rx(BleakGATTCharacteristic, data: bytearray):
@@ -113,7 +113,7 @@ def handle_rx(BleakGATTCharacteristic, data: bytearray):
                 mq_client.publish(f'solarflow-hub/telemetry/{prop}',val)
 
             # also report whole state to mqtt (nothing coming from cloud now :-)
-            mq_client.publish("SKC4SpSn/5ak8yGU7/state",json.dumps(payload["properties"]))
+            mq_client.publish("{SF_PRODUCT_ID}/{deviceid}/state",json.dumps(payload["properties"]))
 
         if "packData" in payload:
             packdata = payload["packData"]
@@ -127,8 +127,16 @@ def handle_rx(BleakGATTCharacteristic, data: bytearray):
 async def run(broker=None, port=None, info_only: bool = False, connect: bool = False, disconnect: bool = False, ssid=None, deviceid=None):
     global mq_client
     global bt_client
+    global SF_PRODUCT_ID
+    product_class = None
+
+    if SF_PRODUCT_ID == '73bkTV':
+      product_class = "zenp"
+    else:
+      product_class = "zenh"
+
     device = await BleakScanner.find_device_by_filter(
-                lambda d, ad: d.name and d.name.lower().startswith("zen")
+                lambda d, ad: d.name and d.name.lower().startswith(product_class)
             )
 
     if device:

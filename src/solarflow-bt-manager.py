@@ -96,7 +96,7 @@ async def set_IoT_Url(client,broker,port,ssid,deviceid):
 
 
 def handle_rx(BleakGATTCharacteristic, data: bytearray):
-    global mq_client
+    global mq_client, SF_PRODUCT_ID, SF_DEVICE_ID
     payload = json.loads(data.decode("utf8"))
     log.info(payload)
 
@@ -113,7 +113,7 @@ def handle_rx(BleakGATTCharacteristic, data: bytearray):
                 mq_client.publish(f'solarflow-hub/telemetry/{prop}',val)
 
             # also report whole state to mqtt (nothing coming from cloud now :-)
-            mq_client.publish("{SF_PRODUCT_ID}/{deviceid}/state",json.dumps(payload["properties"]))
+            mq_client.publish(f"{SF_PRODUCT_ID}/{SF_DEVICE_ID}/state",json.dumps(payload["properties"]))
 
         if "packData" in payload:
             packdata = payload["packData"]
@@ -134,6 +134,8 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
       product_class = "zenp"
     else:
       product_class = "zenh"
+
+    log.info("scan for: " + str(product_class))
 
     device = await BleakScanner.find_device_by_filter(
                 lambda d, ad: d.name and d.name.lower().startswith(product_class)

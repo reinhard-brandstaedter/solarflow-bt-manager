@@ -24,6 +24,8 @@ def deep_get(dictionary, keys, default=None):
 
 def on_message(client, userdata, msg):
     global devices
+    global sf_product_id
+
     if sf_product_id in msg.topic:
         device_id = msg.topic.split('/')[2]
         devices.add(device_id)
@@ -32,7 +34,7 @@ def on_message(client, userdata, msg):
             props = payload["properties"]
             for prop, val in props.items():
                 client.publish(f'solarflow-hub/{device_id}/telemetry/{prop}',val)
-        
+
         if "packData" in payload:
             packdata = payload["packData"]
             if len(packdata) > 0:
@@ -40,15 +42,15 @@ def on_message(client, userdata, msg):
                     sn = pack.pop('sn')
                     for prop, val in pack.items():
                         client.publish(f'solarflow-hub/{device_id}/telemetry/batteries/{sn}/{prop}',val)
-    
+
     if msg.topic == smartmeter_topic:
         payload = json.loads(msg.payload.decode())
-        
+
         value = None
         if type(payload) is float or type(payload) is int:
             value = payload
         else:
-            try: 
+            try:
                 value = deep_get(payload,"MT175.P",None)
                 value = deep_get(payload,"Power.Power_curr",value)
             except:
@@ -77,17 +79,18 @@ def subscribe(client: mqtt_client):
     client.subscribe(report_topic)
     client.subscribe(smartmeter_topic)
     client.on_message = on_message
-    #client.publish(f'iot/73bkTV/{sf_device_id}/properties/read','{"properties": ["getAll"]}')
+    #client.publish(f'iot/{sf_product_id}/{sf_device_id}/properties/read','{"properties": ["getAll"]}')
 
 def run():
     global devices
+    global sf_product_id
     client = connect_mqtt()
     subscribe(client)
     client.loop_start()
 
     while True:
         for device in devices:
-            client.publish(f'iot/73bkTV/{device}/properties/read','{"properties": ["getAll"]}')
+            client.publish(f'iot/{sf_product_id}/{device}/properties/read','{"properties": ["getAll"]}')
         time.sleep(60)
 
 
@@ -95,6 +98,7 @@ def main(argv):
     global mqtt_host, mqtt_port, mqtt_user, mqtt_pwd
     global smartmeter_topic
     global sf_device_id
+    global sf_product_id
     global report_topic
     opts, args = getopt.getopt(argv,"hb:p:u:s:d:s:",["broker=","port=","user=","password=","device=","smartmeter="])
     for opt, arg in opts:
@@ -113,7 +117,7 @@ def main(argv):
             sf_device_id = arg
         elif opt in ("-s", "--smartmeter"):
             smartmeter_topic = arg
-                     
+
     if mqtt_host is None:
         log.error("You need to provide a local MQTT broker (environment variable MQTT_HOST or option --broker)!")
         sys.exit(0)
@@ -124,7 +128,7 @@ def main(argv):
         log.info(f'MQTT User is not set, assuming authentication not needed')
     else:
         log.info(f'MQTT User: {mqtt_user}/{mqtt_pwd}')
-    
+
     if smartmeter_topic is None:
         log.info(f'Smartmeter is not set or configured. For steering the SolarFlow it makes sense to set this value --smartmeter=')
     else:

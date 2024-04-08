@@ -8,7 +8,7 @@ import logging
 import sys
 import getopt
 import os
-import time 
+import time
 
 FORMAT = '%(asctime)s:%(levelname)s: %(message)s'
 logging.basicConfig(stream=sys.stdout, level="INFO", format=FORMAT)
@@ -24,6 +24,7 @@ SF_NOTIFY_CHAR = "0000c305-0000-1000-8000-00805f9b34fb"
 WIFI_PWD = os.environ.get('WIFI_PWD',None)
 WIFI_SSID = os.environ.get('WIFI_SSID',None)
 SF_DEVICE_ID = os.environ.get('SF_DEVICE_ID',None)
+SF_PRODUCT_ID = os.environ.get('SF_PRODUCT_ID','73bkTV')
 mqtt_user = os.environ.get('MQTT_USER',None)
 mqtt_pwd = os.environ.get('MQTT_PWD',None)
 mq_client: mqtt_client = None
@@ -36,7 +37,7 @@ def on_connect(client, userdata, flags, rc):
         log.error("Failed to connect, return code %d\n", rc)
 
 def local_mqtt_connect(broker, port):
-    client = mqtt_client.Client(client_id="solarflow-bt")
+    client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1, client_id="solarflow-bt")
     if mqtt_user is not None and mqtt_pwd is not None:
         client.username_pw_set(mqtt_user, mqtt_pwd)
     client.connect(broker,port)
@@ -53,7 +54,7 @@ async def getInfo(client):
         await client.write_gatt_char(SF_COMMAND_CHAR,b,response=False)
     except Exception:
         log.exception("Getting device Info failed")
-    
+
     try:
         b = bytearray()
         b.extend(map(ord, json.dumps(properties_cmd)))
@@ -62,7 +63,7 @@ async def getInfo(client):
         log.exception("Getting device Info failed")
 
 async def set_IoT_Url(client,broker,port,ssid,deviceid):
-    global mq_client
+    global mq_client, SF_PRODUCT_ID
     c1 = {'iotUrl':broker,
           'messageId':'1002',
           'method': 'token',
@@ -74,7 +75,7 @@ async def set_IoT_Url(client,broker,port,ssid,deviceid):
     cmd2 = '{"messageId":"1003","method":"station"}'
 
     reply = '{"messageId":123,"timestamp":'+str(int(time.time()))+',"params":{"token":"abcdefgh","result":0}}'
-    
+
     try:
         b = bytearray()
         b.extend(map(ord, cmd1))
@@ -91,18 +92,18 @@ async def set_IoT_Url(client,broker,port,ssid,deviceid):
         log.exception("Setting WiFi Mode failed")
 
     if mq_client:
-        mq_client.publish(f'iot/73bkTV/{deviceid}/register/replay',reply)
+        mq_client.publish(f'iot/{SF_PRODUCT_ID}/{deviceid}/register/replay',reply)
 
 
 def handle_rx(BleakGATTCharacteristic, data: bytearray):
-    global mq_client
+    global mq_client, SF_PRODUCT_ID, SF_DEVICE_ID
     payload = json.loads(data.decode("utf8"))
     log.info(payload)
 
     if "method" in payload and payload["method"] == "getInfo-rsp":
         log.info(f'The SF device ID is: {payload["deviceId"]}')
         log.info(f'The SF device SN is: {payload["deviceSn"]}')
-        
+
 
     if mq_client:
         if "properties" in payload:
@@ -112,8 +113,8 @@ def handle_rx(BleakGATTCharacteristic, data: bytearray):
                 mq_client.publish(f'solarflow-hub/telemetry/{prop}',val)
 
             # also report whole state to mqtt (nothing coming from cloud now :-)
-            mq_client.publish("SKC4SpSn/5ak8yGU7/state",json.dumps(payload["properties"]))
-        
+            mq_client.publish(f"{SF_PRODUCT_ID}/{SF_DEVICE_ID}/state",json.dumps(payload["properties"]))
+
         if "packData" in payload:
             packdata = payload["packData"]
             if len(packdata) > 0:
@@ -126,8 +127,18 @@ def handle_rx(BleakGATTCharacteristic, data: bytearray):
 async def run(broker=None, port=None, info_only: bool = False, connect: bool = False, disconnect: bool = False, ssid=None, deviceid=None):
     global mq_client
     global bt_client
+    global SF_PRODUCT_ID
+    product_class = None
+
+    if SF_PRODUCT_ID == '73bkTV':
+      product_class = "zenp"
+    else:
+      product_class = "zenh"
+
+    log.info("scan for: " + str(product_class))
+
     device = await BleakScanner.find_device_by_filter(
-                lambda d, ad: d.name and d.name.lower().startswith("zen")
+                lambda d, ad: d.name and d.name.lower().startswith(product_class)
             )
 
     if device:
@@ -147,7 +158,7 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
                 log.info("Setting IoTURL connection parameters - disconneect")
                 await asyncio.sleep(30)
                 return
-            
+
             if connect and ssid:
                 await set_IoT_Url(bt_client,"mq.zen-iot.com",1883,ssid,SF_DEVICE_ID)
                 log.info("Setting IoTURL connection parameters - connect")
@@ -206,7 +217,7 @@ def main(argv):
         elif opt in ("-u", "--mqtt_user"):
             mqtt_user = arg
         elif opt in ("-p", "--mqtt_pwd"):
-            mqtt_pwd = arg    
+            mqtt_pwd = arg
         elif opt in ("-c", "--connect"):
             connect = True
             disconnect = False
@@ -224,8 +235,11 @@ def main(argv):
         if SF_DEVICE_ID is None:
             print("Please provide your device ID via environment variable SF_DEVICE_ID")
             sys.exit()
+        if SF_PRODUCT_ID is None:
+            print("Please provide your product ID via environment variable SF_PRODUCT_ID (73bkTV for Hub1200, A8yh63 for Hub2000")
+            sys.exit()
         print("Disconnecting Solarflow Hub from Zendure Cloud")
-    
+
     if connect:
         print("Connecting Solarflow Hub Back to Zendure Cloud")
 

@@ -37,7 +37,7 @@ def on_connect(client, userdata, flags, rc):
         log.error("Failed to connect, return code %d\n", rc)
 
 def local_mqtt_connect(broker, port):
-    client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1, client_id="solarflow-bt")
+    client = mqtt_client.Client(client_id="solarflow-bt")
     if mqtt_user is not None and mqtt_pwd is not None:
         client.username_pw_set(mqtt_user, mqtt_pwd)
     client.connect(broker,port)
@@ -92,7 +92,7 @@ async def set_IoT_Url(client,broker,port,ssid,deviceid):
         log.exception("Setting WiFi Mode failed")
 
     if mq_client:
-        mq_client.publish(f'iot/{SF_PRODUCT_ID}/{deviceid}/register/replay',reply)
+        mq_client.publish(f'iot/{SF_PRODUCT_ID}/{deviceid}/register/replay', reply, retain=True)
 
 
 def handle_rx(BleakGATTCharacteristic, data: bytearray):

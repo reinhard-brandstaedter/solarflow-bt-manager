@@ -56,7 +56,7 @@ The proxy mode means your SF Hub will still report some device data to Zendure's
 
 To gather telemetry data you will need to run the BT manager tool as a service on a BT-enabled device (such as a Raspberry Pi) within range of your hub. The BT manager will continously collect telemetry data and report it to MQTT for you.
 
-*Note:* I've been using this mode for some time and it worked mostly flawless. From time to time I had the bluetooth connection drop (using a Raspberry Pi Zero W) and it wouldn't reconnect to the hub. I either had to force drop the BT connection on the RasPi or on the hub by briefly diconnecting it from the WiFi (kickin it out of my Access Point) 
+*Note:* I've been using this mode for some time and it worked mostly flawless. From time to time I had the bluetooth connection drop (using a Raspberry Pi Zero W) and it wouldn't reconnect to the hub. I either had to force drop the BT connection on the RasPi or on the hub by briefly diconnecting it from the WiFi (kickin it out of my Access Point)
 
 ### Getting Basic Information
 To get basic information about the hub (without performing any changes) run the script with the -i option only:
@@ -92,7 +92,7 @@ You can use that data for any other integration (e.g. Homeautomation systems etc
 E.g. my [Solarflow Statuspage](https://github.com/reinhard-brandstaedter/solarflow-statuspage) is now also using this data instead of the cloud data.
 
 > [!NOTE]
-> While the bluetooth connection is enabled, the hub ONLY reports telemetry via BT! There will be no data sent in parallel to the Zendure Cloud broker. As a consequence you will not see any data in the mobile app. You can still control the hub though via the app. 
+> While the bluetooth connection is enabled, the hub ONLY reports telemetry via BT! There will be no data sent in parallel to the Zendure Cloud broker. As a consequence you will not see any data in the mobile app. You can still control the hub though via the app.
 
 ### Disconnecting the hub from the cloud
 You can completely disconnect the hub from the Zendure cloud and have it report to a local MQTT broker. It will then not send any data to the cloud but you will also not be able to change any settings with the app. From that point on you can only control the hub via your local MQTT broker. This gives you full control but is for advanced usage (e.g. setting the output limit to any arbitrary value)
@@ -104,15 +104,20 @@ Disconnecting works by reinitializing the hubs network connection (WiFi) and tel
 (eventually you need to change the WiFi first to another network before joining the target network)
 
 ```
+$ pip3 install -r requirements.txt
 $ export WIFI_PWD="your_wifi_password"
 $ export SF_DEVICE_ID="your_sf_deviceid"
+# your_sf_productid is 73bkTV for Hub1200 or A8yh63 for Hub2000
+$ export SF_PRODUCT_ID="your_sf_productid"
 $ python3 solarflow-bt-manager.py -d -w <WiFi SSID> -b <local MQTT broker>
 ```
 
 example:
 ```
+$ pip3 install -r requirements.txt
 $ export WIFI_PWD="Sup3rS3cret!"
 $ export SF_DEVICE_ID="5ak8yGU7"
+$ export SF_PRODUCT_ID="73bkTV"
 $ python3 solarflow-bt-manager.py -d -w SuperWiFi -b 192.168.1.245
 ```
 
@@ -139,6 +144,7 @@ Yoy can reconnect to hub back to Zendure's cloud again. This might be necessary 
 ```
 $ export WIFI_PWD="your_wifi_password"
 $ export SF_DEVICE_ID="your_sf_deviceid"
+$ export SF_PRODUCT_ID="73bkTV"
 $ python3 solarflow-bt-manager.py -c -w <WiFi SSID>
 ```
 

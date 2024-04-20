@@ -160,7 +160,7 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
 
             if disconnect and broker and port and ssid and SF_DEVICE_ID:
                 await set_IoT_Url(bt_client,broker,port,ssid,SF_DEVICE_ID)
-                log.info("Setting IoTURL connection parameters - disconneect")
+                log.info("Setting IoTURL connection parameters - disconnect")
                 await asyncio.sleep(30)
                 return
 

@@ -10,6 +10,11 @@ This is a little tool to connect to Zendure's Solarflow hub via bluetooth to ret
 1. [How to use](#howto)
 1. [Use Cases](#usecase)
 
+## Supported Devices <a name="what"></a>
+- Solarflow Hub
+    - Hub1200
+    - Hub2000
+- AIO2400
 
 ## Features <a name="features"></a>
 Currently you can:
@@ -17,7 +22,9 @@ Currently you can:
 - retrieve system information (Device ID, Serial No., Battery Pack information, general settings, ...)
 - continously retrieve telemetry data and send it to a local MQTT broker
 - disconnect the hub from Zendure's cloud broker and connect it to a local one (offline mode)
+    - not yet tested for the AIO2400
 - reconnect the hub to Zendure's cloud broker
+    - not yet tested for the AIO2400
 
 ## Why disconnect your SF Hub from the cloud? <a name="why"></a>
 That is a good question. A few reasons:
@@ -107,7 +114,7 @@ Disconnecting works by reinitializing the hubs network connection (WiFi) and tel
 $ pip3 install -r requirements.txt
 $ export WIFI_PWD="your_wifi_password"
 $ export SF_DEVICE_ID="your_sf_deviceid"
-# your_sf_productid is 73bkTV for Hub1200 or A8yh63 for Hub2000
+# your_sf_productid is 73bkTV for Hub1200 or A8yh63 for Hub2000 and Ue4zY5 for AIO2400.
 $ export SF_PRODUCT_ID="your_sf_productid"
 $ python3 solarflow-bt-manager.py -d -w <WiFi SSID> -b <local MQTT broker>
 ```

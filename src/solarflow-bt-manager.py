@@ -25,6 +25,7 @@ WIFI_PWD = os.environ.get('WIFI_PWD',None)
 WIFI_SSID = os.environ.get('WIFI_SSID',None)
 SF_DEVICE_ID = os.environ.get('SF_DEVICE_ID',None)
 SF_PRODUCT_ID = os.environ.get('SF_PRODUCT_ID','73bkTV')
+GLOBAL_INFO_POLLING_INTERVAL = os.environ.get('GLOBAL_INFO_POLLING_INTERVAL', 60)
 mqtt_user = os.environ.get('MQTT_USER',None)
 mqtt_pwd = os.environ.get('MQTT_PWD',None)
 mq_client: mqtt_client = None
@@ -179,11 +180,11 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
                 getinfo = True
                 while True:
                     await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)
-                    # fetch global info every minute
+                    # fetch global info every GLOBAL_INFO_POLLING_INTERVAL seconds
                     if getinfo:
                         await getInfo(bt_client)
                         getinfo = False
-                    getinfo = await asyncio.sleep(60, True)
+                    getinfo = await asyncio.sleep(int(GLOBAL_INFO_POLLING_INTERVAL), True)
     else:
         log.info("No Solarflow device found! You can try these steps:\n \
                   - Move closer to the hub\n \

@@ -132,8 +132,12 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
 
     if SF_PRODUCT_ID == '73bkTV':
       product_class = "zenp"
-    else:
+    elif SF_PRODUCT_ID == 'A8yh63': 
       product_class = "zenh"
+    elif SF_PRODUCT_ID == 'Ue4zY5':
+      product_class = "zenr"
+    else:
+      product_class = "zen"
 
     log.info("scan for: " + str(product_class))
 
@@ -236,7 +240,7 @@ def main(argv):
             print("Please provide your device ID via environment variable SF_DEVICE_ID")
             sys.exit()
         if SF_PRODUCT_ID is None:
-            print("Please provide your product ID via environment variable SF_PRODUCT_ID (73bkTV for Hub1200, A8yh63 for Hub2000")
+            print("Please provide your product ID via environment variable SF_PRODUCT_ID (73bkTV for Hub1200, A8yh63 for Hub2000, Ue4zY5 for AIO2400")
             sys.exit()
         print("Disconnecting Solarflow Hub from Zendure Cloud")
 

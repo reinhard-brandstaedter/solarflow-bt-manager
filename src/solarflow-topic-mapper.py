@@ -63,6 +63,7 @@ def on_message(client, userdata, msg):
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         log.info("Connected to MQTT Broker!")
+        subscribe(client)
     else:
         log.error("Failed to connect, return code %d\n", rc)
 
@@ -85,7 +86,6 @@ def run():
     global devices
     global sf_product_id
     client = connect_mqtt()
-    subscribe(client)
     client.loop_start()
 
     while True:

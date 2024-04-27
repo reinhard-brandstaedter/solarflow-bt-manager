@@ -22,9 +22,7 @@ Currently you can:
 - retrieve system information (Device ID, Serial No., Battery Pack information, general settings, ...)
 - continously retrieve telemetry data and send it to a local MQTT broker
 - disconnect the hub from Zendure's cloud broker and connect it to a local one (offline mode)
-    - not yet tested for the AIO2400
 - reconnect the hub to Zendure's cloud broker
-    - not yet tested for the AIO2400
 
 ## Why disconnect your SF Hub from the cloud? <a name="why"></a>
 That is a good question. A few reasons:
@@ -109,7 +107,7 @@ You can completely disconnect the hub from the Zendure cloud and have it report 
 
 Disconnecting works by reinitializing the hubs network connection (WiFi) and telling the hub to connect to a different MQTT broker.
 (eventually you need to change the WiFi first to another network before joining the target network)
-
+Note: for the AIO2400 you will need to reset the network connection manually by pressing the connection button for ~3s before connecting the AIO to your local broker.  
 ```
 $ pip3 install -r requirements.txt
 $ export WIFI_PWD="your_wifi_password"

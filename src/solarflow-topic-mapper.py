@@ -63,12 +63,13 @@ def on_message(client, userdata, msg):
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         log.info("Connected to MQTT Broker!")
+        subscribe(client)
     else:
         log.error("Failed to connect, return code %d\n", rc)
 
 def connect_mqtt() -> mqtt_client:
     id = ''.join(random.choices(string.ascii_lowercase, k=5))
-    client = mqtt_client.Client(f'zen-topic-remap-{id}')
+    client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1,f'zen-topic-remap-{id}')
     if mqtt_user is not None and mqtt_pwd is not None:
         client.username_pw_set(mqtt_user, mqtt_pwd)
     client.on_connect = on_connect
@@ -85,7 +86,6 @@ def run():
     global devices
     global sf_product_id
     client = connect_mqtt()
-    subscribe(client)
     client.loop_start()
 
     while True:

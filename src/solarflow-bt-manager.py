@@ -25,6 +25,7 @@ WIFI_PWD = os.environ.get('WIFI_PWD',None)
 WIFI_SSID = os.environ.get('WIFI_SSID',None)
 SF_DEVICE_ID = os.environ.get('SF_DEVICE_ID',None)
 SF_PRODUCT_ID = os.environ.get('SF_PRODUCT_ID','73bkTV')
+GLOBAL_INFO_POLLING_INTERVAL = os.environ.get('GLOBAL_INFO_POLLING_INTERVAL', 60)
 mqtt_user = os.environ.get('MQTT_USER',None)
 mqtt_pwd = os.environ.get('MQTT_PWD',None)
 mq_client: mqtt_client = None
@@ -37,7 +38,7 @@ def on_connect(client, userdata, flags, rc):
         log.error("Failed to connect, return code %d\n", rc)
 
 def local_mqtt_connect(broker, port):
-    client = mqtt_client.Client(client_id="solarflow-bt")
+    client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1, client_id="solarflow-bt")
     if mqtt_user is not None and mqtt_pwd is not None:
         client.username_pw_set(mqtt_user, mqtt_pwd)
     client.connect(broker,port)
@@ -132,8 +133,12 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
 
     if SF_PRODUCT_ID == '73bkTV':
       product_class = "zenp"
-    else:
+    elif SF_PRODUCT_ID == 'A8yh63': 
       product_class = "zenh"
+    elif SF_PRODUCT_ID == 'yWF7hV':
+      product_class = "zenr"
+    else:
+      product_class = "zen"
 
     log.info("scan for: " + str(product_class))
 
@@ -155,7 +160,7 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
 
             if disconnect and broker and port and ssid and SF_DEVICE_ID:
                 await set_IoT_Url(bt_client,broker,port,ssid,SF_DEVICE_ID)
-                log.info("Setting IoTURL connection parameters - disconneect")
+                log.info("Setting IoTURL connection parameters - disconnect")
                 await asyncio.sleep(30)
                 return
 
@@ -175,11 +180,11 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
                 getinfo = True
                 while True:
                     await bt_client.start_notify(SF_NOTIFY_CHAR,handle_rx)
-                    # fetch global info every minute
+                    # fetch global info every GLOBAL_INFO_POLLING_INTERVAL seconds
                     if getinfo:
                         await getInfo(bt_client)
                         getinfo = False
-                    getinfo = await asyncio.sleep(60, True)
+                    getinfo = await asyncio.sleep(int(GLOBAL_INFO_POLLING_INTERVAL), True)
     else:
         log.info("No Solarflow device found! You can try these steps:\n \
                   - Move closer to the hub\n \
@@ -236,7 +241,7 @@ def main(argv):
             print("Please provide your device ID via environment variable SF_DEVICE_ID")
             sys.exit()
         if SF_PRODUCT_ID is None:
-            print("Please provide your product ID via environment variable SF_PRODUCT_ID (73bkTV for Hub1200, A8yh63 for Hub2000")
+            print("Please provide your product ID via environment variable SF_PRODUCT_ID (73bkTV for Hub1200, A8yh63 for Hub2000, yWF7hV for AIO2400")
             sys.exit()
         print("Disconnecting Solarflow Hub from Zendure Cloud")
 

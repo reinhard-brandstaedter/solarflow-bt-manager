@@ -10,6 +10,11 @@ This is a little tool to connect to Zendure's Solarflow hub via bluetooth to ret
 1. [How to use](#howto)
 1. [Use Cases](#usecase)
 
+## Supported Devices <a name="what"></a>
+- Solarflow Hub
+    - Hub1200
+    - Hub2000
+- AIO2400
 
 ## Features <a name="features"></a>
 Currently you can:
@@ -102,12 +107,12 @@ You can completely disconnect the hub from the Zendure cloud and have it report 
 
 Disconnecting works by reinitializing the hubs network connection (WiFi) and telling the hub to connect to a different MQTT broker.
 (eventually you need to change the WiFi first to another network before joining the target network)
-
+Note: for the AIO2400 you will need to reset the network connection manually by pressing the connection button for ~3s before connecting the AIO to your local broker.  
 ```
 $ pip3 install -r requirements.txt
 $ export WIFI_PWD="your_wifi_password"
 $ export SF_DEVICE_ID="your_sf_deviceid"
-# your_sf_productid is 73bkTV for Hub1200 or A8yh63 for Hub2000
+# your_sf_productid is 73bkTV for Hub1200 or A8yh63 for Hub2000 and yWF7hV for AIO2400.
 $ export SF_PRODUCT_ID="your_sf_productid"
 $ python3 solarflow-bt-manager.py -d -w <WiFi SSID> -b <local MQTT broker>
 ```

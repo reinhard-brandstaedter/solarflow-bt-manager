@@ -114,6 +114,8 @@ $ export WIFI_PWD="your_wifi_password"
 $ export SF_DEVICE_ID="your_sf_deviceid"
 # your_sf_productid is 73bkTV for Hub1200 or A8yh63 for Hub2000 and yWF7hV for AIO2400.
 $ export SF_PRODUCT_ID="your_sf_productid"
+$ export MQTT_USER="your mqtt user"
+$ export MQTT_PWD="mqtt password"
 $ python3 solarflow-bt-manager.py -d -w <WiFi SSID> -b <local MQTT broker>
 ```
 
@@ -123,6 +125,8 @@ $ pip3 install -r requirements.txt
 $ export WIFI_PWD="Sup3rS3cret!"
 $ export SF_DEVICE_ID="5ak8yGU7"
 $ export SF_PRODUCT_ID="73bkTV"
+$ export MQTT_USER="mqtt"
+$ export MQTT_PWD="mqtt_password"
 $ python3 solarflow-bt-manager.py -d -w SuperWiFi -b 192.168.1.245
 ```
 

@@ -137,6 +137,8 @@ async def run(broker=None, port=None, info_only: bool = False, connect: bool = F
       product_class = "zenh"
     elif SF_PRODUCT_ID == 'yWF7hV':
       product_class = "zenr"
+    elif SF_PRODUCT_ID == 'ja72U0ha':
+      product_class = "zene"
     else:
       product_class = "zen"
 

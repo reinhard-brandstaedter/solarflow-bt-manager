@@ -17,6 +17,7 @@ This is a little tool to connect to Zendure's Solarflow hub via bluetooth to ret
 - AIO2400 (SF_PRODUCT_ID=yWF7hV)
 - Hyper2000 (SF_PRODUCT_ID=ja72U0ha)
 - ACE 1500 (SF_PRODUCT_ID=8bM93H)
+- SolarFlow 800 (SF_PRODUCT_ID=B1NHMC)
 
 Please set the environment variable SF_PRODUCT_ID for all commands unless you are using the original Hub 1200.
 
